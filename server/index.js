@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const low = require('lowdb');
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
+const socketIo = require('socket.io');
 
 /** DATABASE SETUP **/
 const DB = low('db.json');
@@ -15,6 +16,7 @@ DB._.mixin(require('lodash-id'));
 DB.defaults(DEFAULT_DATA).write();
 
 const app = express();
+const server = require('http').Server(app);
 const PORT = process.env.PORT || 3001;
 const APP_SECRET = 'IHopeThisIsSecureEnough';
 
@@ -62,6 +64,14 @@ app.put(`${API_PREFIX}/lists/:id`, function (req, res) {
             .updateById(req.params.id, req.body)
             .write();
 
+        broadcastAction({
+            type: 'LISTS_UPDATE',
+            payload: {
+                id: req.params.id,
+                updates: req.body
+            }
+        });
+
         res.send(list);
     } catch (e) {
         res.sendStatus(404);
@@ -74,6 +84,13 @@ app.delete(`${API_PREFIX}/lists/:id`, function (req, res) {
             .removeById(req.params.id)
             .write();
 
+        broadcastAction({
+            type: 'LISTS_REMOVE',
+            payload: {
+                id: req.params.id
+            }
+        });
+
         res.sendStatus(200);
     } catch (e) {
         res.sendStatus(404);
@@ -84,6 +101,11 @@ app.post(`${API_PREFIX}/lists`, function (req, res) {
     const list = DB.get('lists')
         .insert(req.body)
         .write();
+
+    broadcastAction({
+        type: 'LISTS_CREATE',
+        payload: { list }
+    });
 
     res.send(list);
 });
@@ -105,6 +127,14 @@ app.put(`${API_PREFIX}/cards/:id`, function (req, res) {
             .updateById(req.params.id, req.body)
             .write();
 
+        broadcastAction({
+            type: 'CARD_UPDATE',
+            payload: {
+                id: req.params.id,
+                updates: req.body
+            }
+        });
+
         res.send(card);
     } catch (e) {
         res.sendStatus(404);
@@ -117,6 +147,13 @@ app.delete(`${API_PREFIX}/cards/:id`, function (req, res) {
             .removeById(req.params.id)
             .write();
 
+        broadcastAction({
+            type: 'CARD_REMOVE',
+            payload: {
+                id: req.params.id
+            }
+        });
+
         res.sendStatus(200);
     } catch (e) {
         res.sendStatus(404);
@@ -127,6 +164,11 @@ app.post(`${API_PREFIX}/cards`, function (req, res) {
     const card = DB.get('cards')
         .insert(req.body)
         .write();
+
+    broadcastAction({
+        type: 'CARD_CREATE',
+        payload: { card, listId: card.list_id }
+    });
 
     res.send(card);
 });
@@ -201,6 +243,15 @@ app.get(`/api/me`, function(req, res) {
 });
 
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`API listening on http://localhost:${PORT}/`)
 });
+
+/***
+ * SOCKETS
+ */
+
+const io = socketIo(server);
+function broadcastAction(action) {
+    io.sockets.emit('action', action);
+}
