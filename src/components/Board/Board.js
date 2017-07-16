@@ -40,7 +40,12 @@ class Board extends React.Component {
 
 
 function mapStateToProps(state) {
-    return { lists: state.lists };
+    const listsWithCards = state.lists.map(list => {
+        list.cards = state.cards.filter(card => card.list_id === list.id);
+        return list;
+    });
+
+    return { lists: listsWithCards };
 }
 
 export default connect(mapStateToProps)(Board);

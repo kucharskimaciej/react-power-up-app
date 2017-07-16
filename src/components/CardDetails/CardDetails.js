@@ -45,7 +45,7 @@ class CardDetails extends React.Component {
                             <div className="cardDetails__move">
                                 <strong>Move to: </strong>
                                 <ul>
-                                    {lists.filter(list => list.id !== currentList.id).map(targetList =>
+                                    {lists.map(targetList =>
                                         <li key={targetList.id}>
                                             <a onClick={this.onMove.bind(this, targetList.id)}>{targetList.title}</a>
                                         </li>
@@ -74,15 +74,17 @@ class CardDetails extends React.Component {
 function mapStateToProps(state, ownProps) {
     const {match} = ownProps;
     const id = Number(match.params.id);
-    let card;
 
-    const list = state.lists.find(list => {
-        card = list.cards.find(card => card.id === id);
 
-        return !!card;
-    });
+    const card = state.cards.find(c => c.id === id);
+    if (!card) {
+        return {};
+    }
 
-    return { card, list, lists: state.lists };
+    const list = state.lists.find(l => l.id === card.list_id);
+    const otherLists = state.lists.filter(l => l.id !== list.id);
+
+    return { card, list, lists: otherLists };
 }
 
 export default connect(mapStateToProps)(CardDetails);
