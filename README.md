@@ -17,7 +17,7 @@ See the section about [running tests](#running-tests) for more information.
 
 ### `npm run server test`
 
-Launches the API/websocket server on `http://localhost:3001/api`
+Launches the API/websocket server on `http://localhost:3001`
 
 
 ## API docs
@@ -73,3 +73,14 @@ User schema:
 
 `POST /api/token` - send `{ username: string, password: string }` to authenticate as a user<br>
 `GET /api/me` - get currently logged user based on the `x-access-token`
+
+
+## Websockets
+Websockets URL: `ws://localhost:3001`. The websocket will emit following actions:
+
+- `CARD_UPDATE`
+- `CARD_CREATE`
+- `CARD_REMOVE`
+- `LIST_UPDATE`
+- `LIST_REMOVE`
+- `LIST_CREATE`
