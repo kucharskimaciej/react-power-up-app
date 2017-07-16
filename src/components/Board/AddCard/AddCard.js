@@ -45,7 +45,7 @@ export default class AddCard extends React.Component {
     render() {
         const content = this.state.adding ?
             <form className="addCard__form" onSubmit={this.handleSubmit.bind(this)}>
-                    <textarea className="addCard__input"
+                    <input className="addCard__input"
                               value={this.state.title}
                               onChange={this.handleTitleChange.bind(this)}
                               ref={(i) => this.input = i } />

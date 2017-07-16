@@ -1,3 +1,5 @@
+import {createId} from 'lodash-id';
+
 export const CARD_UPDATE = 'CARD_UPDATE';
 export const CARD_CREATE = 'CARD_CREATE';
 export const CARD_REMOVE = 'CARD_REMOVE';
@@ -10,7 +12,7 @@ export function createCard(listId, title) {
             listId,
             card: {
                 title,
-                id: Date.now()
+                id: createId()
             }
         }
     };

@@ -13,8 +13,8 @@ export default class EditableHeader extends React.Component {
         editing: false
     };
 
-    toggleEdit() {
-        this.setState({ editing: !this.state.editing });
+    toggleEdit(value = !this.state.editing) {
+        this.setState({ editing: value });
     }
 
     stopEditing() {
@@ -42,7 +42,7 @@ export default class EditableHeader extends React.Component {
         }
 
         return (
-            <div className={className} onClick={this.toggleEdit.bind(this)}>
+            <div className={className} onClick={this.toggleEdit.bind(this, true)}>
                 {isEditing ?
                     <input type="text"
                            defaultValue={children}

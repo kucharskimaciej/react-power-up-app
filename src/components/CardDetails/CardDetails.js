@@ -72,11 +72,7 @@ class CardDetails extends React.Component {
 }
 
 function mapStateToProps(state, ownProps) {
-    const {match} = ownProps;
-    const id = Number(match.params.id);
-
-
-    const card = state.cards.find(c => c.id === id);
+    const card = state.cards.find(c => c.id === ownProps.match.params.id);
     if (!card) {
         return {};
     }
